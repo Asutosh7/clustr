@@ -1,4 +1,4 @@
 clustr
 ======
 
-very simple and fast grid based cluster analysis
+very simple and fast grid based cluster analysis.
