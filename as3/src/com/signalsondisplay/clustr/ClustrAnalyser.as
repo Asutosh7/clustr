@@ -20,6 +20,7 @@ package com.signalsondisplay.clustr
 			m_width = spaceWidth;
 			m_height = spaceHeight;
 			m_clusters = new Vector.<Cluster>();
+			m_grid = new Grid(m_width, m_height);
 		}
 	
 		public function get clusters():Vector.<Cluster>
@@ -54,7 +55,7 @@ package com.signalsondisplay.clustr
 		 * width/height of grid cell
 		 *  
 		 */
-		public function run( /*nodes:Vector.<GridCell>,*/ rx:Number, ry:Number ):void
+		public function run( rx:Number, ry:Number ):void
 		{
 			m_cells = m_grid.cells;
 			m_clusters.length = 0;
@@ -76,6 +77,9 @@ package com.signalsondisplay.clustr
 					}
 				}
 			}
+
+			for (var i:int = 0; i < m_grid.cells.length; i++)
+				m_grid.cells[i].reset();
 		}
 		
 		private function scanNeighbours( x:int, y:int ):void

@@ -25,9 +25,16 @@ package com.signalsondisplay.clustr
 			return m_nodes;
 		}
 		
-		public function clear():void
+		public function reset():void
 		{
 			visited = false;
+			for (var i:int = 0; i < m_nodes.length; i++)
+				m_nodes[i].visited = false;
+		}
+		
+		public function clear():void
+		{
+			reset();
 			m_nodes.length = 0;
 		}
 		

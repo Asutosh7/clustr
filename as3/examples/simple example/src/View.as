@@ -1,9 +1,11 @@
 package  
 {
+	import com.signalsondisplay.clustr.Cluster;
 	import flash.display.*;
 	import com.bit101.components.PushButton;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import events.AddNodeEvent;
 	
 	/**
 	 * ...
@@ -14,6 +16,8 @@ package
 		private static const WIDTH:int = 1280;
 		private static const HEIGHT:int = 720;
 		private static const DASHBOARD_HEIGHT:int = 48;
+		
+		private var m_controller:Main;
 		
 		// dashboard
 		private var m_runButton:PushButton;
@@ -33,12 +37,20 @@ package
 		private var m_overlay:Sprite;
 		private var m_resx:int;
 		private var m_resy:int;
+		
+		private var m_clusters:Vector.<Cluster>
 
-		public function View() 
+		public function View( controller:Main = null )
 		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
+			m_controller = controller;
 			m_resx = 16;
 			m_resy = 16;
+		}
+		
+		public function setController( controller:Main ):void
+		{
+			m_controller = controller;
 		}
 		
 		private function init( e:Event ):void
@@ -97,7 +109,20 @@ package
 		
 		private function runBtnHandler( e:MouseEvent ):void
 		{
-			//dispatchEvent(new Event(Event.SELECT));
+			m_clusters = m_controller.runAnalysis(m_resx, m_resy);
+
+			dashboard.clusters_txt.text = "clusters: " + String(m_clusters.length);
+			
+			for (var i:int = 0; i < m_clusters.length; i++)
+			{
+				trace("cluster: " + i);
+				var color:uint = Math.random() * 0xFFFFFF;
+				for (var j:int = 0; j < m_clusters[i].nodes.length; j++)
+				{
+					trace(j, m_clusters[i].nodes[j].x, m_clusters[i].nodes[j].y);
+					m_bitmapData.setPixel(m_clusters[i].nodes[j].x, m_clusters[i].nodes[j].y, color);
+				}
+			}
 		}
 		
 		private function setResolutionHandler( e:MouseEvent ):void
@@ -135,6 +160,7 @@ package
 			if (m_bitmap.mouseX >= 0 && m_bitmap.mouseY >= 0)
 			{
 				m_bitmapData.setPixel(m_bitmap.mouseX, m_bitmap.mouseY, 0xFFFFFF);
+				m_controller.addNodeToGrid(m_bitmap.mouseX, m_bitmap.mouseY);
 				highlightCell();
 			}
 		}
@@ -162,7 +188,7 @@ package
 		{
 			var x:int = m_bitmap.mouseX / WIDTH * m_resx;
 			var y:int = m_bitmap.mouseY / HEIGHT * m_resy;
-			trace(y * m_resx + x, x, y);
+
 			m_cells[y * m_resx + x]++;
 			if (m_cells[y * m_resx + x] < 4)
 			{
