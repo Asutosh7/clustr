@@ -1,4 +1,4 @@
-package com.signalsondisplay.clustr
+﻿package com.signalsondisplay.clustr
 {
 	
 	import flash.geom.Point;
@@ -11,22 +11,22 @@ package com.signalsondisplay.clustr
 	{
 		private const TWO_PI:Number = 6.28318531;
 		
-		private var m_vertices:Vector.<Point>;
-		private var m_result:Vector.<Point>;
+		private var m_vertices:Vector.<ClusterNode>;
+		private var m_result:Vector.<ClusterNode>;
 		private var m_angleOffset:Number;
-		private var m_initialPoint:Point;
-		private var m_currentPoint:Point;
+		private var m_initialPoint:ClusterNode;
+		private var m_currentPoint:ClusterNode;
 
 		public function ConvexHull()
 		{
-			m_initialPoint = new Point();
-			m_currentPoint = new Point();
-			m_result = new Vector.<Point>();
+			m_initialPoint = new ClusterNode();
+			m_currentPoint = new ClusterNode();
+			m_result = new Vector.<ClusterNode>();
 		}
 
-		public function compute( vertices:Vector.<Point> ):Vector.<Point>
+		public function compute( vertices:Vector.<ClusterNode> ):Vector.<ClusterNode>
 		{
-			var target:Point = null;
+			var target:ClusterNode = null;
 			var angle:Number;
 			var prevAngle:Number;
 			var index:int;
@@ -40,7 +40,7 @@ package com.signalsondisplay.clustr
 				index = 0;
 				for (var i:int = 0; i < m_vertices.length; i++)
 				{
-					var p:Point = m_vertices[ i ];
+					var p:ClusterNode = m_vertices[i];
 					if ( p == m_currentPoint ) continue;
 					var dx:Number = p.x - m_currentPoint.x;
 					var dy:Number = p.y - m_currentPoint.y;
@@ -73,7 +73,7 @@ package com.signalsondisplay.clustr
 			m_initialPoint.x = m_initialPoint.y = 0;
 			for (var i:int = 0; i < m_vertices.length; i++)
 			{
-				var p:Point = m_vertices[i];
+				var p:ClusterNode = m_vertices[i];
 				if (p.x > m_initialPoint.x)
 				{
 					m_initialPoint = p;
@@ -82,7 +82,7 @@ package com.signalsondisplay.clustr
 			}
 			if (index)
 			{
-				var tmp:Point = m_vertices[index];
+				var tmp:ClusterNode = m_vertices[index];
 				m_vertices[index] = m_vertices[0];
 				m_vertices[0] = tmp;
 			}

@@ -1,6 +1,8 @@
-package  
+﻿package  
 {
 	import com.signalsondisplay.clustr.Cluster;
+	import com.signalsondisplay.clustr.ClusterNode;
+	import com.signalsondisplay.clustr.ConvexHull;
 	import flash.display.*;
 	import com.bit101.components.PushButton;
 	import flash.events.Event;
@@ -35,6 +37,7 @@ package
 		private var m_cells:Vector.<uint>;
 		private var m_grid:Sprite;
 		private var m_overlay:Sprite;
+		private var m_convex:Sprite;
 		private var m_resx:int;
 		private var m_resy:int;
 		
@@ -80,6 +83,10 @@ package
 			m_overlay = new Sprite();
 			m_overlay.y = DASHBOARD_HEIGHT;
 			addChild(m_overlay);
+			
+			m_convex = new Sprite();
+			m_convex.y = DASHBOARD_HEIGHT;
+			addChild(m_convex);
 
 			dashboard.resx_txt.text = "res x: " + String(m_resx);
 			dashboard.resy_txt.text = "res y: " + String(m_resy);
@@ -113,6 +120,8 @@ package
 
 			dashboard.clusters_txt.text = "clusters: " + String(m_clusters.length);
 			
+			m_convex.graphics.clear();
+			
 			for (var i:int = 0; i < m_clusters.length; i++)
 			{
 				trace("cluster: " + i);
@@ -121,6 +130,17 @@ package
 				{
 					trace(j, m_clusters[i].nodes[j].x, m_clusters[i].nodes[j].y);
 					m_bitmapData.setPixel(m_clusters[i].nodes[j].x, m_clusters[i].nodes[j].y, color);
+				}
+				
+				var ch:ConvexHull = new ConvexHull();
+				var convexHull:Vector.<ClusterNode> = ch.compute(m_clusters[i].nodes);
+				
+				m_convex.graphics.lineStyle(1, 0xFFFFFF, .5);
+				
+				for (var k:int = 0; k < convexHull.length-1; k++)
+				{
+					m_convex.graphics.moveTo(convexHull[k].x, convexHull[k].y);
+					m_convex.graphics.lineTo(convexHull[k+1].x, convexHull[k+1].y);
 				}
 			}
 		}

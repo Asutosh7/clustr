@@ -11,7 +11,7 @@ package com.signalsondisplay.clustr
 		public var visited:Boolean;
 		private var m_clusterID:int;
 		
-		public function ClusterNode( x:Number, y:Number, clusterID:int = -1 ) 
+		public function ClusterNode( x:Number = 0, y:Number = 0, clusterID:int = -1 ) 
 		{
 			this.x = x;
 			this.y = y;
