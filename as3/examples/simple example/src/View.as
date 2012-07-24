@@ -5,6 +5,7 @@
 	import com.signalsondisplay.clustr.ConvexHull;
 	import flash.display.*;
 	import com.bit101.components.PushButton;
+	import com.bit101.components.CheckBox;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import events.AddNodeEvent;
@@ -24,8 +25,9 @@
 		// dashboard
 		private var m_runButton:PushButton;
 		private var m_resButton:PushButton;
-		private var m_gridToggle:PushButton;
-		private var m_overlayToggle:PushButton;
+		private var m_gridToggle:CheckBox;
+		private var m_overlayToggle:CheckBox;
+		private var m_convexToggle:CheckBox;
 		private var m_clearButton:PushButton;
 		private var m_gridVisible:Boolean;
 		private var m_overlayVisible:Boolean;
@@ -66,8 +68,17 @@
 			
 			m_resButton = new PushButton(dashboard, yPos + m_runButton.width + 20, yPos, "set resolution", setResolutionHandler);
 			m_clearButton = new PushButton(dashboard, m_resButton.x + m_resButton.width + 20, yPos, "clear nodes", clearNodesHandler);
-			m_gridToggle = new PushButton(dashboard, m_clearButton.x + m_clearButton.width + 20, yPos, "hide grid", gridToggleHandler);
-			m_overlayToggle = new PushButton(dashboard, m_gridToggle.x + m_gridToggle.width + 20, yPos, "hide overlay", overlayToggleHandler);
+			
+			m_resButton.enabled = false;
+			
+			
+			m_gridToggle = new CheckBox(dashboard, m_clearButton.x + m_clearButton.width + 20, yPos, "grid", gridToggleHandler);
+			yPos = (dashboard.height / 2) - m_gridToggle.height / 2;
+			m_gridToggle.y = yPos;
+			m_overlayToggle = new CheckBox(dashboard, m_gridToggle.x + m_gridToggle.width + 20, yPos, "overlay", overlayToggleHandler);
+			m_convexToggle = new CheckBox(dashboard, m_overlayToggle.x + m_overlayToggle.width + 20, yPos, "convex hull", convexToggleHandler);
+			
+			m_gridToggle.selected = m_overlayToggle.selected = m_convexToggle.selected = true;
 
 			m_bitmapData = new BitmapData(WIDTH, HEIGHT, false, 0x0);
 			m_bitmap = new Bitmap(m_bitmapData);
@@ -124,23 +135,27 @@
 			
 			for (var i:int = 0; i < m_clusters.length; i++)
 			{
-				trace("cluster: " + i);
+				/*
 				var color:uint = Math.random() * 0xFFFFFF;
 				for (var j:int = 0; j < m_clusters[i].nodes.length; j++)
 				{
 					trace(j, m_clusters[i].nodes[j].x, m_clusters[i].nodes[j].y);
 					m_bitmapData.setPixel(m_clusters[i].nodes[j].x, m_clusters[i].nodes[j].y, color);
 				}
-				
-				var ch:ConvexHull = new ConvexHull();
-				var convexHull:Vector.<ClusterNode> = ch.compute(m_clusters[i].nodes);
-				
-				m_convex.graphics.lineStyle(1, 0xFFFFFF, .5);
-				
-				for (var k:int = 0; k < convexHull.length-1; k++)
+				*/
+
+				if (m_clusters[i].nodes.length >= 3)
 				{
-					m_convex.graphics.moveTo(convexHull[k].x, convexHull[k].y);
-					m_convex.graphics.lineTo(convexHull[k+1].x, convexHull[k+1].y);
+					var ch:ConvexHull = new ConvexHull();
+					var convexHull:Vector.<ClusterNode> = ch.compute(m_clusters[i].nodes);
+					
+					m_convex.graphics.lineStyle(2, 0xFFFFFF, .25);
+					
+					for (var k:int = 0; k < convexHull.length - 1; k++)
+					{
+						m_convex.graphics.moveTo(convexHull[k].x, convexHull[k].y);
+						m_convex.graphics.lineTo(convexHull[k+1].x, convexHull[k+1].y);
+					}
 				}
 			}
 		}
@@ -167,6 +182,11 @@
 		private function overlayToggleHandler( e:MouseEvent ):void
 		{
 			m_overlay.visible = !m_overlay.visible;
+		}
+		
+		private function convexToggleHandler( e:MouseEvent ):void
+		{
+			m_convex.visible = !m_convex.visible;
 		}
 		
 		private function clearNodesHandler( e:MouseEvent ):void
